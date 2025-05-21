@@ -22,4 +22,4 @@ app.add_middleware(
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello from dockerized FastAPI!"}
+    return {"message": "Hello from dockerized FastAPI Backend!"}
