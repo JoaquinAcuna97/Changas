@@ -16,8 +16,8 @@ repos:
 
   - repo: local
     hooks:
-      - id: pytest
-        name: Run Pytest
-        entry: pytest
+      - id: docker-pytest
+        name: Run Pytest inside Docker
+        entry: docker-compose run --rm backend_test
         language: system
-        types: [python]
+        pass_filenames: false
