@@ -1,22 +1,68 @@
-from fastapi.testclient import TestClient
-from main import app
+import pytest
+import pytest_asyncio
+from httpx import AsyncClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
-client = TestClient(app)
+MONGO_URI = "mongodb://mongo:27017"
+BASE_URL = "http://backend:8000"
 
 
-def test_login_success():
-    response = client.post("/login", json={"username": "admin", "password": "admin"})
+# ✅ Simple test to verify test discovery
+def test_sanity():
+    assert 1 + 1 == 2
+
+
+# Fixture to override DB for test
+@pytest_asyncio.fixture(autouse=True, scope="function")
+async def clear_users():
+    client = AsyncIOMotorClient(MONGO_URI)
+    db = client["changas_test"]
+    await db["users"].delete_many({})
+    yield
+    await db["users"].delete_many({})
+    client.close()
+
+
+@pytest.mark.asyncio
+async def test_register():
+    async with AsyncClient(base_url=BASE_URL) as ac:
+        response = await ac.post(
+            "/register",
+            json={
+                "email": "test@example.com",
+                "password": "password123",
+                "phone": "123456789",
+            },
+        )
     assert response.status_code == 200
-    assert "token" in response.json()
+    assert response.json()["message"] == "User registered successfully"
 
 
-def test_login_failure():
-    response = client.post("/login", json={"username": "user", "password": "wrong"})
+@pytest.mark.asyncio
+async def test_login_success():
+    async with AsyncClient(base_url=BASE_URL) as ac:
+        # First register user
+        await ac.post(
+            "/register",
+            json={
+                "email": "test@example.com",
+                "password": "password123",
+                "phone": "123456789",
+            },
+        )
+        # Then attempt login
+        response = await ac.post(
+            "/login", json={"email": "test@example.com", "password": "password123"}
+        )
+    assert response.status_code == 200
+    assert response.json()["message"] == "Login successful"
+
+
+@pytest.mark.asyncio
+async def test_login_failure():
+    async with AsyncClient(base_url=BASE_URL) as ac:
+        response = await ac.post(
+            "/login", json={"email": "wrong@example.com", "password": "wrongpass"}
+        )
     assert response.status_code == 401
-
-
-def test_register_user():
-    payload = {"username": "newuser", "password": "secret", "phone": "123456789"}
-    response = client.post("/register", json=payload)
-    assert response.status_code == 200
-    assert response.json()["user"]["username"] == "newuser"
+    assert response.json()["detail"] == "Invalid credentials"

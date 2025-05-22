@@ -1,6 +1,6 @@
-from auth import login_user, register_user
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import auth
 
 app = FastAPI()
 
@@ -27,11 +27,4 @@ def read_root():
     }
 
 
-@app.post("/login")
-def login(data: dict):
-    return login_user(data)
-
-
-@app.post("/register")
-def register(data: dict):
-    return register_user(data)
+app.include_router(auth.router)
