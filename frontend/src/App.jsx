@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import Login from './components/Login';
+
 import './App.css'
 function App() {
   const [message, setMessage] = useState('Loading...')
@@ -17,6 +17,9 @@ function App() {
       <h1>Hello from React</h1>
       <p>Backend says: {message}</p>
       <p>Title: {title}</p>
+      <div>
+        <Login />
+      </div>
     </div>
   )
 }

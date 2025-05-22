@@ -10,6 +10,9 @@ services:
 
   frontend:
     build: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Prevents overwriting node_modules inside container
     ports:
       - "3000:80"
     restart: always
