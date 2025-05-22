@@ -16,3 +16,8 @@ services:
     ports:
       - "5173:5173"  # Puerto del servidor Vite
     restart: always
+  backend_test:
+    build: ./backend
+    command: ["pytest", "tests"]
+    volumes:
+      - ./backend/:/app
