@@ -1,8 +1,6 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
 from auth import login_user, register_user
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -20,13 +18,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
-    return {"message": "Hello from dockerized FastAPI Backend!", "title": "Let's do a login form"}
+    return {
+        "message": "Hello from dockerized FastAPI Backend!",
+        "title": "Let's do a login form",
+    }
+
 
 @app.post("/login")
 def login(data: dict):
     return login_user(data)
+
 
 @app.post("/register")
 def register(data: dict):
