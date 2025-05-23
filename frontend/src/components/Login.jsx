@@ -1,5 +1,6 @@
 import React from "react";
 import AuthForm from "./AuthForm";
+import axios from "axios";
 
 export default function Login({ onSwitch }) {
   const fields = [
@@ -7,10 +8,32 @@ export default function Login({ onSwitch }) {
     { label: "Contraseña", name: "password", type: "password", autoComplete: "current-password" },
   ];
 
-  const handleLogin = (form, setMessage) => {
-    setMessage(`Iniciando sesión con ${form.username}...`);
-    setTimeout(() => setMessage("Login exitoso! (simulado)"), 1000);
-  };
+
+
+const handleLogin = async (form, setMessage) => {
+  setMessage(`Iniciando sesión con ${form.username}...`);
+
+  try {
+    const response = await axios.post("http://localhost:8000/login", {
+      email: form.username,
+      password: form.password,
+    });
+
+    if (response.status === 200) {
+      setMessage("Login exitoso!");
+      // Optionally, save token or user info here, e.g.:
+      // localStorage.setItem("token", response.data.token);
+    } else {
+      setMessage("Error desconocido durante el login.");
+    }
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.detail) {
+      setMessage(`Error: ${error.response.data.detail}`);
+    } else {
+      setMessage("Error de red o del servidor.");
+    }
+  }
+};
 
   return (
     <AuthForm

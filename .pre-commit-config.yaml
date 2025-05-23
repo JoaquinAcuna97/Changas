@@ -17,6 +17,14 @@ repos:
   - repo: local
     hooks:
       - id: docker-pytest
+        name: Clean Docker containers
+        entry: docker-compose down -v --remove-orphans
+        language: system
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: docker-pytest
         name: Run Pytest inside Docker
         entry: docker-compose run --rm backend_test
         language: system

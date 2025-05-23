@@ -6,7 +6,19 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/changas_db
     restart: always
+  
+  mongo:
+    image: mongo:6
+    container_name: changas_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
   frontend:
     build: ./frontend
@@ -21,3 +33,10 @@ services:
     command: ["pytest", "tests"]
     volumes:
       - ./backend/:/app
+    environment:
+      - PYTHONPATH=/app
+    depends_on:
+      - backend
+      - mongo
+volumes:
+  mongo_data:

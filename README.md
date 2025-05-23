@@ -6,6 +6,7 @@ This template provides a minimal setup to get React working in Vite with HMR and
 
 - cd fastapi-backend
 - docker-compose up --build
+- docker-compose run --rm backend_test
 
 ## React Commands
 
